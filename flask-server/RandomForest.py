@@ -3,6 +3,7 @@ import random
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.ensemble import RandomForestClassifier
+import joblib
 from sklearn.metrics import recall_score 
 from sklearn.metrics import classification_report
 
@@ -36,10 +37,15 @@ RFC = RandomForestClassifier(random_state=0)
 RFC.fit(x_train, y_train)
 
 
-prediction = RFC.predict(x_test)
+joblib.dump(vectorizer,'count_vectorizerRFC.joblib')
+
+joblib.dump(RFC,'random_forest_model.joblib')
 
 
-RFC.score(x_test, y_test)
+#prediction = RFC.predict(x_test)
+
+
+#RFC.score(x_test, y_test)
 
 
 #print(classification_report(y_test, prediction))
@@ -50,9 +56,9 @@ RFC.score(x_test, y_test)
 
 #3. F1 Score: A weighted harmonic mean of precision and recall. The closer to 1, the better the model.
 
-RandomForestScore= recall_score(y_test, prediction)
+#RandomForestScore= recall_score(y_test, prediction)
 
-print(RandomForestScore)
+#print(RandomForestScore)
 
 
 

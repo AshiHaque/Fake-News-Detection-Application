@@ -1,6 +1,7 @@
 import pandas as pd
 import random
 from sklearn.feature_extraction.text import CountVectorizer
+import joblib
 from sklearn.metrics import classification_report
 from sklearn.metrics import recall_score 
 from sklearn.tree import DecisionTreeClassifier
@@ -19,7 +20,9 @@ test = df[df['random_number'] > 0.8]
 df.head()
 
 
-vectorizer = CountVectorizer(token_pattern=r'\b\w+\b')
+vectorizer = CountVectorizer(token_pattern=r'\b\w+\b', stop_words='EN')
+
+
 
 train_matrix = vectorizer.fit_transform(train['text'])
 test_matrix = vectorizer.transform(test['text'])
@@ -34,11 +37,14 @@ y_test = test['status']
 DT = DecisionTreeClassifier()
 DT.fit(x_train, y_train)
 
+joblib.dump(vectorizer,'count_vectorizerDT.joblib')
 
-prediction=DT.predict(x_test)
+joblib.dump(DT,'decision_tree_model.joblib')
+
+#prediction=DT.predict(x_test)
 
 
-DT.score(x_test, y_test)
+#DT.score(x_test, y_test)
 
 
 #print(classification_report(y_test, prediction))
@@ -49,7 +55,7 @@ DT.score(x_test, y_test)
 
 #3. F1 Score: A weighted harmonic mean of precision and recall. The closer to 1, the better the model.
 
-DecisionTreeScore= recall_score(y_test, prediction)
+#DecisionTreeScore= recall_score(y_test, prediction)
 
-print(DecisionTreeScore)
+#print(DecisionTreeScore)
 

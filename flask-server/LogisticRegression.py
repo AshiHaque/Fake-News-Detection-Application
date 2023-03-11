@@ -3,6 +3,7 @@ import random
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
+import joblib
 from sklearn.metrics import recall_score 
 from sklearn.metrics import classification_report,confusion_matrix
 
@@ -36,11 +37,20 @@ lr= LogisticRegression(max_iter=500)
 lr.fit(x_train,y_train)
 
 
-prediction=lr.predict(x_test)
+#he dump method is used to save the lr object as a binary file with the name logistic_regression_model.joblib.
+# Train the logistic regression model
+
+# Save the trained model
+joblib.dump(vectorizer,'count_vectorizerLR.joblib')
+
+joblib.dump(lr,'logistic_regression_model.joblib')
 
 
-new = np.asarray(y_test)
-confusion_matrix(prediction,y_test)
+#prediction=lr.predict(x_test)
+
+
+#new = np.asarray(y_test)
+#confusion_matrix(prediction,y_test)
 
 
 #print(classification_report(prediction,y_test))
@@ -51,9 +61,9 @@ confusion_matrix(prediction,y_test)
 
 #3. F1 Score: A weighted harmonic mean of precision and recall. The closer to 1, the better the model.
 
-LogisticRegressionScore= recall_score(y_test, prediction)
+#LogisticRegressionScore= recall_score(y_test, prediction)
 
-print(LogisticRegressionScore)
+#print(LogisticRegressionScore)
 
 
 

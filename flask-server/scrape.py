@@ -1,22 +1,50 @@
-from bs4 import BeautifulSoup
-import requests
-from csv import writer
+import csv
+import re
+import string
+import nltk
+from newspaper import Article
 
-url = "https://www.bbc.co.uk/news/world-europe-64664560"
-page = requests.get(url)
+def wordopt(text):
+    text = re.sub('\[.*?\]', '', text)
+    text = re.sub("\\W"," ",text) 
+    text = re.sub('https?://\S+|www\.\S+', '', text)
+    text = re.sub('<.*?>+', '', text)
+    text = re.sub('[%s]' % re.escape(string.punctuation), '', text)
+    text = re.sub('\n', '', text)
+    text = re.sub('\w*\d\w*', '', text)    
+    return text
 
-soup = BeautifulSoup(page.content, 'html.parser')
-lists = soup.find_all('div', class_="ssrcss-q03fby-ContainerWithSidebarWrapper e1jl38b40")
+def article_scraping(url):
+    # Download punkt tokenizer if not already downloaded
+    nltk.download('punkt')
 
-with open('article.csv', 'w', encoding='utf8', newline='') as a:
-    thewriter = writer(a)
-    header = ['title', 'text']
-    thewriter.writerow(header)
+    news_url = url
+    article = Article(news_url)
 
-    for list in lists:
-        title = list.find('h1', class_="ssrcss-15xko80-StyledHeading e1fj1fc10").text
-        paragraphs = list.find_all('p', class_="ssrcss-1q0x1qg-Paragraph eq5iqo00")
-        text = "".join([p.text for p in paragraphs])
+    # Download and parse the article
+    article.download()
+    article.parse()
 
-        info = [title, text]
-        thewriter.writerow(info)
+    # Get the title and text of the article
+    title = article.title
+    text = article.text
+
+    # Write the article title and text to a CSV file
+    with open('./articles/article.csv', 'w', encoding='utf8', newline='') as a:
+        thewriter = csv.writer(a)
+        header = ['title', 'text']
+        thewriter.writerow(header)
+        thewriter.writerow([title, text])
+
+    # Clean the article text and write to a new CSV file
+    with open('./articles/articleClean.csv', 'w', newline='', encoding='utf-8') as output_file:
+        writer = csv.writer(output_file)
+        writer.writerow(['title', 'text'])
+
+        with open('./articles/article.csv', 'r', newline='', encoding='utf-8') as input_file:
+            reader = csv.reader(input_file)
+            next(reader) # skip header row
+            for row in reader:
+                title, text = row
+                text = wordopt(text)
+                writer.writerow([title, text])
